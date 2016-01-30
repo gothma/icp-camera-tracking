@@ -1,8 +1,19 @@
-function pc = img2pointcloud(image, calib)
+function pc = img2pointcloud(image, calib, camera_rotation)
 
-[x,y,z] = find(image);
-points = [y, z, 480 - x];
+fx = calib(1,1);
+fy = calib(1,1);
+fx_inv = 1/fx;
+fy_inv = 1/fy;
+cx = calib(1,3);
+cy = calib(2,3);
 
-pc = (calib * double(points'));
+[x,y,depth] = find(image);
+%points = [x, y, ones(size(x))];
+
+% pc = (calib * camera_rotation * double(points)');
+pc = [];
+pc(1, :) = (x-cx) * fx_inv .* double(depth);
+pc(2, :) = -(y-cy) * fy_inv .* double(depth);
+pc(3, :) = depth;
 
 end
