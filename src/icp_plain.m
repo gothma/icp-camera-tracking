@@ -2,28 +2,37 @@ function [ errors, rotation_translation ] = icp_plain( X, Y, steps, varargin)
 %ICP_PLAIN Summary of this function goes here
 %   X - 
 %   Y - 
-    misc_checkType(X, 'DOUBLE[- 3]');
-    misc_checkType(Y, 'DOUBLE[- 3]');
+    misc_checkType(X, 'STRUCT(pc color)');
+    misc_checkType(Y, 'STRUCT(pc color)');
     misc_checkType(steps, 'INT');
     
-    props = {'closest_point' @closest_point_delaunayn 'FUNC',
-             'save_rotated_pc' 0 'BOOL'};    
+    props = {'closest_points' @closest_points_delaunayn 'FUNC'
+             'save_rotated_pc' 0 'BOOL'
+             'verbose' 1 'BOOL'};    
     opt= opt_proplistToStruct(varargin{:});
     [opt, ~]= opt_setDefaults(opt, props);
     
     
         errors = zeros(steps, 1);
         rotation_translation = cell(steps, 3);
+        
         for i=1:steps
+            if opt.verbose
+                display(sprintf('ICP step %i', i));
+            end
             
             closest_points = opt.closest_points(X, Y);
 
-            mean_X = mean(X);
-            normalized_X = bsxfun(@minus, X, mean_X);
+            mean_X = mean(X.pc);
+            normalized_X = bsxfun(@minus, X.pc, mean_X);
 
-            P = Y(closest_points, :);
+            P = Y.pc(closest_points, :);
             mean_P = mean(P);
             normalized_P = bsxfun(@minus, P, mean_P);
+            
+            if opt.verbose
+               display(sprintf('ICP step %i: Calculate W matrix', i)); 
+            end
             
             weight_correspondance = ones(size(normalized_P,1), 3);
 
@@ -39,13 +48,13 @@ function [ errors, rotation_translation ] = icp_plain( X, Y, steps, varargin)
             rotated_pc = bsxfun(@plus, (R * normalized_P')', t);
             error = error_icp(normalized_X, rotated_pc, S);
             
-            Y = bsxfun(@plus, (R * Y')', t);
+            Y.pc = bsxfun(@plus, (R * Y.pc')', t);
 
             errors(i) = error;
             rotation_translation{i, 1} = R;
             rotation_translation{i, 2} = t;
             if opt.save_rotated_pc
-                rotation_translation{i, 3} = Y;
+                rotation_translation{i, 3} = Y.pc;
             end
         end
 end
