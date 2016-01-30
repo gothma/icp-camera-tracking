@@ -31,28 +31,7 @@ for i=1:10
    
    % do the icp
    if i > 1
-        % returns the closest point in last_pc for each point in pc
-        closest_points = dsearchn(last_pc, delaunayn(last_pc), pc);
-        
-        mean_frame = mean(pc);
-        pc_minus_mean = bsxfun(@minus, pc, mean_frame);
-        
-        corresponding_points_from_last_frame = last_pc(closest_points, :);
-        mean_last_frame = mean(corresponding_points_from_last_frame);
-        last_pc_minus_mean = bsxfun(@minus, corresponding_points_from_last_frame, mean_last_frame);
-        
-        W = zeros(3,3);
-        
-        for j=1:size(pc_minus_mean, 1)
-            W = W + pc_minus_mean(j, :)' * last_pc_minus_mean(j, :);
-        end
-        [U, S, V] = svd(W);
-        
-        R = U * V';
-        t = mean_frame - (R * mean_last_frame')';
-        
-        rotate_last_pc = bsxfun(@plus, (R * last_pc_minus_mean')', t);
-        error = error_icp(pc_minus_mean, rotate_last_pc, S);
+        [errors, rt] = icp_plain(pc, last_pc, 10);
    end
    
    % visualize

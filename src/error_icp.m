@@ -3,7 +3,10 @@ function [ error ] = error_icp( X, Y, S )
 %   Input:
 %       X
 %       Y
-%       S
+%  
+misc_checkType(X, 'DOUBLE');
+misc_checkType(Y, 'DOUBLE');
+misc_checkType(S, 'DOUBLE');
 if size(S) == [3,3]
    S = [S(1,1), S(2,2), S(3,3)]; 
 end
