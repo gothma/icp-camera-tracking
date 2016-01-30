@@ -1,8 +1,6 @@
 function pc = img2pointcloud(image, calib)
 
-[x,y,z] = find(image);
-points = [y, z, 480 - x];
-
-pc = (calib * double(points'));
+[y,x,z] = find(image);
+pc = [x, z, 480 - y];
 
 end
