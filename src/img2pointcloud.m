@@ -1,10 +1,8 @@
-function [x, y, z] = img2pointcloud(image)
+function pc = img2pointcloud(image, calib)
 
-sizeX = size(image, 2);
-sizeY = size(image, 1);
+[x,y,z] = find(image);
+points = [y, z, 480 - x];
 
-x = reshape(repmat(1:640, 480, 1), 1, sizeX*sizeY);
-y = reshape(repmat(1:sizeY, 1, sizeX), 1, sizeX*sizeY);
-z = reshape(image, 1, sizeX*sizeY);
+pc = (calib * double(points'));
 
 end
