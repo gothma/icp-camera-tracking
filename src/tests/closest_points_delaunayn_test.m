@@ -10,6 +10,21 @@ function teardownOnce(testCase)
 teardown()
 end
 
+function test_four_matching_points(testCase)
+X.pc = [0,0,0
+    0,1,0
+    1,0,0
+    1,1,0];
+Y.pc = [1,1,1
+    1,0,1
+    0,1,1
+    0,0,1];
+actual = closest_points_delaunayn(X,Y);
+expected = [4,3,2,1]';
+verifyEqual(testCase, actual, expected);
+
+end
+
 function test_two_matching(testCase)
 X.pc = [1,2,3;4,5,6];
 Y.pc = [7,8,9];
