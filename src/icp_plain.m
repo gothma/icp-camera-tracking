@@ -2,15 +2,16 @@ function [ errors, rotation_translation ] = icp_plain( X, Y, steps, varargin)
 %ICP_PLAIN Summary of this function goes here
 %   X - 
 %   Y - 
-    misc_checkType(X, 'STRUCT(pc color)');
-    misc_checkType(Y, 'STRUCT(pc color)');
-    misc_checkType(steps, 'INT');
+    p = inputParser;
+    addRequired(p, 'X', @isPointCloud);
+    addRequired(p, 'Y', @isPointCloud);
+    addRequired(p, 'steps', @isnumeric);
+    addParameter(p, 'closest_points', @closest_points_delaunayn);
+    addParameter(p, 'save_rotated_pc', false);
+    addParameter(p, 'verbose', true);
     
-    props = {'closest_points' @closest_points_delaunayn 'FUNC'
-             'save_rotated_pc' 0 'BOOL'
-             'verbose' 1 'BOOL'};    
-    opt= opt_proplistToStruct(varargin{:});
-    [opt, ~]= opt_setDefaults(opt, props);
+    parse(p, X, Y, steps, varargin{:});
+    opt = p.Results;
     
     
         errors = zeros(steps, 1);
@@ -23,10 +24,10 @@ function [ errors, rotation_translation ] = icp_plain( X, Y, steps, varargin)
             
             closest_points = opt.closest_points(X, Y);
 
-            mean_X = mean(X.pc);
-            normalized_X = bsxfun(@minus, X.pc, mean_X);
+            mean_X = mean(X.pc.Location);
+            normalized_X = bsxfun(@minus, X.pc.Location, mean_X);
 
-            P = Y.pc(closest_points, :);
+            P = Y.pc.Location(closest_points, :);
             mean_P = mean(P);
             normalized_P = bsxfun(@minus, P, mean_P);
             
@@ -48,14 +49,18 @@ function [ errors, rotation_translation ] = icp_plain( X, Y, steps, varargin)
             rotated_pc = bsxfun(@plus, (R * normalized_P')', t);
             error = error_icp(normalized_X, rotated_pc, S);
             
-            Y.pc = bsxfun(@plus, (R * Y.pc')', t);
+            transform = affine3d([[R t']; [0 0 0 1]]');
+            Y.pc = pctransform(Y.pc, transform);
 
             errors(i) = error;
             rotation_translation{i, 1} = R;
             rotation_translation{i, 2} = t;
             if opt.save_rotated_pc
-                rotation_translation{i, 3} = Y.pc;
+                rotation_translation{i, 3} = Y;
             end
         end
 end
 
+function y = isPointCloud(x)
+    y = isa(x.pc, 'pointCloud');
+end

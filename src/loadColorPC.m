@@ -1,4 +1,4 @@
-function [pc, c] = loadColorPC(image, color, calib)
+function [pc] = loadColorPC(image, color, calib)
 
 % Find indices of depth values
 [v,u,d] = find(image);
@@ -24,5 +24,6 @@ x = (u - cx) .* inv(fx) .* d;
 y = (v - cy) .* inv(fy) .* d;
 z = -d;
 
-pc = [x, y, z];
+% Create Point Cloud object
+pc = pointCloud([x, y, z], 'Color', c);
 end

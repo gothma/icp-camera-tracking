@@ -1,3 +1,5 @@
+addpath('misc', 'utils');
+
 calibration_matrix = load('../train/camera_calibration_matrix.txt');
 
 camera_images = dir('../train/depth_*.png');
@@ -15,10 +17,8 @@ for i=1:10
    camera_rotation = eye(3);
    camera_transpose = zeros(3, 1);
    
-   
    current = struct();
-   
-   [current.pc, current.color] = loadColorPC(depth_img, color_img, calibration_matrix);
+   current.pc = loadColorPC(depth_img, color_img, calibration_matrix);
 
    % do the icp
    if i > 1
@@ -27,7 +27,7 @@ for i=1:10
    
    % visualize
    figure,
-       pcshow(pc);
+       pcshow(current.pc);
     
    last = current;
 end
