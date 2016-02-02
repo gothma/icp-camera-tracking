@@ -6,13 +6,14 @@ function [ out ] = closest_points_delaunayn( X, Y )
     parse(p, X, Y);
     
     if (~isfield(Y, 'delaunayn'))
-        Y.delaunayn = delaunayn(Y.pc.Location);
+        try
+            Y.delaunayn = delaunayn(Y.pc.Location);
+        catch
+            out = dsearchn(Y.pc.Location, X.pc.Location);
+            return
+        end
     end
     
-    try
-        out = dsearchn(Y.pc.Location, Y.delaunayn, X.pc.Location);
-    catch
-        out = dsearchn(Y.pc.Location, X.pc.Location);
-    end
+    out = dsearchn(Y.pc.Location, Y.delaunayn, X.pc.Location);
 end
 
