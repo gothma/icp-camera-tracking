@@ -16,9 +16,9 @@ X.pc = pointCloud([x y z]);
 expected = affine3d(makehgtform('translate', [0 10 0])');
 Y.pc = pctransform(X.pc, expected);
 
-[~, actual] = icp_plain(X, Y, 'criterion', @(~,~,s) s > 1);
+[~, ~, actual] = icp_plain(X, Y, 'criterion', @(~,~,s) s > 1);
 
-verifyEqual(testCase, actual{0}.T, expected.T, 'AbsTol', 0.001);
+verifyEqual(testCase, actual{1}.T, expected.T, 'AbsTol', 0.001);
 
 end
 

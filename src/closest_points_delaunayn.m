@@ -5,7 +5,7 @@ function [ out ] = closest_points_delaunayn( X, Y )
     addRequired(p, 'Y', @(x) isa(x.pc, 'pointCloud'));
     parse(p, X, Y);
     
-    if (~isfield(Y, 'delaunayn'))
+    if (~Y.hasDelaunayn())
         try
             Y.delaunayn = delaunayn(Y.pc.Location);
         catch

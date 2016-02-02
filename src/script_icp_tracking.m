@@ -17,14 +17,17 @@ for i=1:10
    camera_rotation = eye(3);
    camera_transpose = zeros(3, 1);
    
-   current = struct();
+   current = PointCloudContainer();
    current.pc = loadColorPC(depth_img, color_img, calibration_matrix);
 
    % do the icp
    if i > 1
-        [errors, rt] = icp_plain(last, current, ...
+        [~, errors, rt] = icp_plain(last, current, ...
         'criterion', @(~,~,steps) steps > 10);
    end
+   
+   figure,
+        plot(errors)
    
    % visualize
    figure,
@@ -32,3 +35,4 @@ for i=1:10
     
    last = current;
 end
+    
