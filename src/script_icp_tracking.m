@@ -22,7 +22,8 @@ for i=1:10
 
    % do the icp
    if i > 1
-        [errors, rt] = icp_plain(current, last, 10);
+        [errors, rt] = icp_plain(last, current, ...
+        'criterion', @(~,~,steps) steps > 10);
    end
    
    % visualize
