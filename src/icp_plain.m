@@ -24,7 +24,7 @@ function [ errors, rotation_translation ] = icp_plain( X, Y, steps, varargin)
             
             correspondences = opt.closest_points(X, Y);
 
-            [transform, error] = svd_transformation(X, Y, correspondences, ones(size(correspondences,1), 3));
+            [transform, error] = svd_transformation(X, Y, correspondences, ones(size(correspondences,1), 1));
             
             Y.pc = pctransform(Y.pc, transform);
 
