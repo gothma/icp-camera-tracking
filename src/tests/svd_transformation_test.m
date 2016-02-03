@@ -18,7 +18,7 @@ Y.pc = pctransform(X.pc, expected);
 
 [i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1));
 
-verifyEqual(testCase, inv(i_actual.T), expected.T);
+verifyEqual(testCase, i_actual.T, expected.T);
 verifyEqual(testCase, error, 0);
 
 end
@@ -31,7 +31,7 @@ Y.pc = pctransform(X.pc, expected);
 
 [i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1));
 
-verifyEqual(testCase, inv(i_actual.T), expected.T, 'AbsTol', 0.001);
+verifyEqual(testCase, i_actual.T, expected.T, 'AbsTol', 0.001);
 verifyEqual(testCase, error, 0, 'AbsTol', 0.001);
 
 end
@@ -44,7 +44,7 @@ Y.pc = pctransform(X.pc, expected);
 
 [i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1));
 
-verifyEqual(testCase, inv(i_actual.T), expected.T, 'AbsTol', 0.001);
+verifyEqual(testCase, i_actual.T, expected.T, 'AbsTol', 0.001);
 verifyEqual(testCase, error, 0, 'AbsTol', 0.001);
 
 end
