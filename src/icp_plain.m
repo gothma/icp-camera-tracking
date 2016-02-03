@@ -18,19 +18,27 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
     total_transformation = affine3d(eye(4));
     error = inf;
     transformations = {};
+    times = [0];
     i = 1;
 
     while ~opt.criterion(transform, error, i)
+        tic
+
         if opt.verbose
             display(sprintf('ICP step %i', i));
         end
 
         % For each point in "to" find the closest point on "from"
-        disp('Corresponding points')
+        if opt.verbose
+            disp('Corresponding points')
+        end
         correspondences = opt.closest_points(from, to);
-        disp('Transformation')
+        
+        if opt.verbose
+            disp('Transformation')
+        end
         [transform, error] = svd_transformation(from, to, correspondences, ones(size(correspondences,1), 1));
-
+        
         from.pc = pctransform(from.pc, transform);
 
         % Save intermediate results
@@ -38,6 +46,16 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
         transformations{i} = transform;
         total_transformation.T = total_transformation.T * transform.T;
         i = i + 1;
+        
+        times = [times; toc];
+        
+        if opt.verbose
+            figure(12)
+            plot(errors)
+            figure(13)
+            plot(cumsum(times))
+            drawnow
+        end
     end
 end
 
