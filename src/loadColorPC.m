@@ -25,5 +25,5 @@ y = (v - cy) .* inv(fy) .* d;
 z = -d;
 
 % Create Point Cloud object
-pc = pointCloud([x, y, z], 'Color', c);
+pc = PointCloudContainer([x, y, z], c);
 end

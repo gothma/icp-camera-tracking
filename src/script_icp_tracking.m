@@ -19,8 +19,7 @@ for i=1:10
    camera_rotation = eye(3);
    camera_transpose = zeros(3, 1);
    
-   current = PointCloudContainer();
-   current.pc = loadColorPC(depth_img, color_img, calibration_matrix);
+   current = loadColorPC(depth_img, color_img, calibration_matrix);
 
    % do the icp
    if i > 1
@@ -35,7 +34,7 @@ for i=1:10
            subplot(1,2,1),
            plot(errors),
            subplot(1,2,2),
-           pcshow(current.pc),
+           current.show(),
            drawnow
    end
     

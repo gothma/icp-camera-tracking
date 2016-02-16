@@ -12,11 +12,9 @@ end
 
 function test_one_step(testCase)
 [x, z, y] = find(ones(2,2));
-X = PointCloudContainer();
-Y = PointCloudContainer();
-X.pc = pointCloud([x y z]);
+X = PointCloudContainer([x y z]);
 expected = affine3d(makehgtform('translate', [0 10 0])');
-Y.pc = pctransform(X.pc, expected);
+Y = X.transform(expected);
 
 [~, ~, actual] = icp_plain(X, Y, 'criterion', @(~,~,s) s > 1, 'verbose', false);
 

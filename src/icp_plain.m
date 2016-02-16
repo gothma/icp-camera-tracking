@@ -39,7 +39,7 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
         end
         [transform, error] = svd_transformation(from, to, correspondences, ones(size(correspondences,1), 1));
         
-        from.pc = pctransform(from.pc, transform);
+        from.transform(transform);
 
         % Save intermediate results
         errors = [errors; error];
@@ -60,5 +60,5 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
 end
 
 function y = isPointCloud(x)
-    y = isa(x.pc, 'pointCloud');
+    y = isa(x, 'PointCloudContainer');
 end
