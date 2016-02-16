@@ -39,7 +39,7 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
         end
         [transform, error] = svd_transformation(from, to, correspondences, ones(size(correspondences,1), 1));
         
-        from.transform(transform);
+        from = from.transform(transform);
 
         % Save intermediate results
         errors = [errors; error];
