@@ -16,7 +16,6 @@ color_images = dir('../train/color_*.png');
 
 ground_truth = load_ground_truth('../test/ICP_quasi_ground_truth_poses.txt');
     
-last_pc = [];
 last_i = -1;
 results = struct([]);
 
@@ -27,10 +26,7 @@ for i=range
    end
    depth_img = imread(fullfile('../train', camera_img_name));
    color_img = imread(fullfile('../train', color_images(i).name));
-   
-   camera_rotation = eye(3);
-   camera_transpose = zeros(3, 1);
-   
+      
    current = loadColorPC(depth_img, color_img, calibration_matrix);
 
    % do the icp
@@ -38,10 +34,9 @@ for i=range
         results(i).to_i = i;
         results(i).from_i = last_i;
         
-        [estimated_transformation, errors, rt] = icp_plain(last, current, ...
+        [estimated_transformation, errors, ~] = icp_plain(last, current, ...
         'criterion', @(~,error,steps) steps > 10, 'verbose', false);
 
-        results(i).est_trans = estimated_transformation;
         results(i).icp_error = errors;
     
         gt_transformation = ominus(ground_truth{i - 1}, ground_truth{i});
@@ -55,7 +50,9 @@ for i=range
 end
 
 result_table = struct2table(results);
-writetable(result_table, 'test.csv');
+
+filename = sprintf('%s-%05.0f.mat', datestr(now,'yyyy-mm-dd-HH-MM-SS-FFF'), rand * 100000);
+save(filename, 'result_table');
 end
 
 
