@@ -43,7 +43,6 @@ last_i = -1;
 results = struct([]);
 
 for i=range
-    tstart = tic;
     camera_img_name = camera_images(i).name;
     if ~isempty(regexpi(camera_img_name, '[0-9]_'))
       continue 
@@ -55,6 +54,7 @@ for i=range
 
     % do the icp
     if i > 1
+        tstart = tic;
         % Copy arguments
         arg_names = fieldnames(p.Results);
         for i_arg = 1:size(arg_names);
@@ -82,11 +82,11 @@ for i=range
         
         % Save transformation
         results(i).transformation = estimated_transformation;
-   end
-    
-   last = current;
-   last_i = i;
-   results(i).duration = toc(tstart);
+        results(i).duration = toc(tstart);
+    end
+
+    last = current;
+    last_i = i;
 end
 
 result_table = struct2table(results); %#ok
