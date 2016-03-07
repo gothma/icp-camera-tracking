@@ -19,13 +19,14 @@ def run_matlab(function, args=None):
     total_arglist = ['matlab', '-nodisplay', '-nojvm', '-nosplash', '-r', wrapped_call]
     subprocess.call(total_arglist)
 
-def main():
+def get_matlab_cluster():
     cluster = dispy.JobCluster(
-        run_matlab,
-        loglevel=logging.DEBUG,
-        node_port=1337,
-        secret=SECRET)
+    run_matlab,
+    loglevel=logging.DEBUG,
+    node_port=1337,
+    secret=SECRET)
 
+def main():
     job = cluster.submit('runtests')
     res = job()
     print res
