@@ -3,7 +3,7 @@ import dispy
 import subprocess
 import os
 
-SECRET='f%7!g7OT31Nj6$<faR5"'
+SECRET='kVloXxvVwtqUKDOD'
 
 def run_matlab(function, args=None):
     import subprocess
