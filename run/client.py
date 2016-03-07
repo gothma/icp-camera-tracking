@@ -23,7 +23,7 @@ def get_matlab_cluster():
     cluster = dispy.JobCluster(
     run_matlab,
     loglevel=logging.DEBUG,
-    node_port=1337,
+    node_port=32746,
     secret=SECRET)
 
 def main():
@@ -33,7 +33,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
