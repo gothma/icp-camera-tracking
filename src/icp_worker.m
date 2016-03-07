@@ -62,6 +62,9 @@ for i=range
             results(i).(arg_name) = p.Results.(arg_name);
         end
         
+        git_info = getGitInfo('..');
+        results(i).git_hash = git_info.hash;
+        
         % Insert framecount
         results(i).from_i = last_i;
         results(i).to_i = i;
