@@ -40,6 +40,7 @@ color_images = dir('../train/color_*.png');
 ground_truth = load_ground_truth('../test/ICP_quasi_ground_truth_poses.txt');
     
 last_i = -1;
+last = -1;
 results = struct([]);
 
 for i=range

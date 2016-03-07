@@ -13,14 +13,13 @@ def run_matlab(function, args=None):
     else:
         call = function
     print('Calling %s' % call)
-    wrapped_call = 'try; %s; catch; exit; end; exit' % call
-
+    wrapped_call = 'try; cd /home/gothm/icp_files/src; %s; catch E; disp(E); exit; end; exit' % call
 
     total_arglist = ['matlab', '-nodisplay', '-nojvm', '-nosplash', '-r', wrapped_call]
     subprocess.call(total_arglist)
 
 def get_matlab_cluster():
-    cluster = dispy.JobCluster(
+    return dispy.JobCluster(
     run_matlab,
     loglevel=logging.DEBUG,
     node_port=32746,
