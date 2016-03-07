@@ -16,7 +16,7 @@ X = PointCloudContainer([x y z]);
 expected = affine3d(makehgtform('translate', [2 3 4])');
 Y = X.transform(expected);
 
-[i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1));
+[i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1), @error_icp);
 
 verifyEqual(testCase, i_actual.T, expected.T);
 verifyEqual(testCase, error, 0);
@@ -29,7 +29,7 @@ X = PointCloudContainer([x y z]);
 expected = affine3d(makehgtform('axisrotate', [1 2 3], pi/2)');
 Y = X.transform(expected);
 
-[i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1));
+[i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1), @error_icp);
 
 verifyEqual(testCase, i_actual.T, expected.T, 'AbsTol', 0.001);
 verifyEqual(testCase, error, 0, 'AbsTol', 0.001);
@@ -42,7 +42,7 @@ X = PointCloudContainer([x y z]);
 expected = affine3d(makehgtform('axisrotate', [1 2 3], pi/2)' * makehgtform('translate', [2 3 4])');
 Y = X.transform(expected);
 
-[i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1));
+[i_actual, error] = svd_transformation(X, Y, 1:4, ones(4,1), @error_icp);
 
 verifyEqual(testCase, i_actual.T, expected.T, 'AbsTol', 0.001);
 verifyEqual(testCase, error, 0, 'AbsTol', 0.001);

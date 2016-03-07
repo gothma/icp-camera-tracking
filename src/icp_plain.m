@@ -9,6 +9,7 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
     addParameter(p, 'closest_points', @closest_points_delaunayn);
     addParameter(p, 'save_rotated_pc', false);
     addParameter(p, 'verbose', true);
+    addParameter(p, 'icp_error_func', @error_icp);
     
     parse(p, from, to, varargin{:});
     opt = p.Results;
@@ -32,12 +33,12 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
         if opt.verbose
             disp('Corresponding points')
         end
-        correspondences = opt.closest_points(from, to);
+        [correspondences, weights] = opt.closest_points(from, to);
         
         if opt.verbose
             disp('Transformation')
         end
-        [transform, error] = svd_transformation(from, to, correspondences, ones(size(correspondences,1), 1));
+        [transform, error] = svd_transformation(from, to, correspondences, weights, opt.icp_error_func);
         
         from = from.transform(transform);
 
