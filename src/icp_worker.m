@@ -12,11 +12,15 @@ range = eval(p.Results.frame);
 
 switch p.Results.convergence
     case '1step'
-        convergence_func = @(~,error,steps) steps > 1;
+        convergence_func = @(~,~,steps) steps > 1;
     case '10steps'
-        convergence_func = @(~,error,steps) steps > 10;
+        convergence_func = @(~,~,steps) steps > 10;
     case '25steps'
-        convergence_func = @(~,error,steps) steps > 25;
+        convergence_func = @(~,~,steps) steps > 25;
+    case '100steps'
+        convergence_func = @(~,~,steps) steps > 100;
+    case '0.05error'
+        convergence_func = @(~,errors,~) numel(errors) >= 2 && errors(end-1) - errors(end) <= 0.05;
 end
 
 switch p.Results.closest_points
@@ -72,7 +76,7 @@ for i=range
         
         % Call icp
         [estimated_transformation, errors, ~] = icp_plain(last, current, ...
-        'criterion', convergence_func, 'verbose', false, ...
+        'criterion', convergence_func, 'verbose', true, ...
         'closest_points', closest_points_func, ...
         'icp_error_func', icp_error_func);
 

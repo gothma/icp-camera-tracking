@@ -17,12 +17,11 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
     errors = [];
     transform = affine3d(eye(4));
     total_transformation = affine3d(eye(4));
-    error = inf;
     transformations = {};
     times = [0];
     i = 1;
 
-    while ~opt.criterion(transform, error, i)
+    while ~opt.criterion(transform, errors, i)
         tic
 
         if opt.verbose
