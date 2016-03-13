@@ -2,6 +2,7 @@ classdef PointCloudContainer < handle
     
     properties
         delaunayn;
+        KDTree;
         homogenous;
         pc;
         color;
@@ -16,6 +17,7 @@ classdef PointCloudContainer < handle
             if nargin == 2
                 self.color = color;
             end
+            self.KDTree = false;
         end
         
         function value = get.pc(self)
@@ -24,6 +26,10 @@ classdef PointCloudContainer < handle
       
         function b = hasDelaunayn (self)
             b = size(self.delaunayn, 1) ~= 0;
+        end
+        
+        function b = hasKDTree(self)
+            b = isa(self.KDTree, 'KDTreeSearcher');
         end
         
         function new = transform(self, transform)
