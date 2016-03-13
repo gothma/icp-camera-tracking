@@ -6,6 +6,7 @@ p.addParameter('frame', 1);
 p.addParameter('convergence', '10steps');
 p.addParameter('closest_points', 'delaunayn');
 p.addParameter('icp_error_func', 'svd_error');
+p.addParameter('verbose', 'false');
 
 p.parse(varargin{:});
 range = eval(p.Results.frame);
@@ -23,9 +24,18 @@ switch p.Results.convergence
         convergence_func = @(~,errors,~) numel(errors) >= 2 && errors(end-1) - errors(end) <= 0.05;
 end
 
+switch p.Results.verbose
+    case 'true'
+        verbose = true;
+    case 'false'
+        verbose = false;
+end
+
 switch p.Results.closest_points
     case 'delaunayn'
         closest_points_func = @closest_points_delaunayn;
+    case 'kdtree'
+        closest_points_func = @closest_points_kdtree;
 end
 
 switch p.Results.icp_error_func
@@ -77,7 +87,7 @@ for i=range
 
             % Call icp
             [estimated_transformation, errors, ~] = icp_plain(last, current, ...
-            'criterion', convergence_func, 'verbose', true, ...
+            'criterion', convergence_func, 'verbose', verbose, ...
             'closest_points', closest_points_func, ...
             'icp_error_func', icp_error_func);
 
@@ -97,7 +107,11 @@ for i=range
         last = current;
         last_i = i;
     catch E
-        fprintf('Error in frame %d: %s\n', i, E.message);
+        if ~verbose
+            fprintf('Error in frame %d: %s\n', i, E.message);
+        else
+            rethrow(E);
+        end
         continue
     end
 end
