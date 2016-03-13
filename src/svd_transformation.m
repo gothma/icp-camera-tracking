@@ -8,11 +8,7 @@ function [ transformation, error ] = svd_transformation(X, Y, correspondences, w
             mean_P = mean(P);
             normalized_P = bsxfun(@minus, P, mean_P);
 
-            W = zeros(3,3);
-%             Try to get rid of this for loop
-            for j=1:size(normalized_X, 1)
-                W = W + weights(j) * normalized_X(j, :)' * normalized_P(j, :);
-            end
+            W = normalized_X' * normalized_P;
             [U, S, V] = svd(W);
             
             R = U * V';
