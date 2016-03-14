@@ -1,24 +1,23 @@
-function [ transformation, error ] = svd_transformation(X, Y, correspondences, weights)
+function [ transformation, error ] = svd_transformation(X, Y, correspondences, weights, error_func)
 % Returns the transformation from X to Y with minimal error
 
-            mean_X = mean(X.pc.Location);
-            normalized_X = bsxfun(@minus, X.pc.Location, mean_X);
+            normalized_weights = weights ./ sum(weights);
+            mean_X = X.pc' * normalized_weights;
+            normalized_X = X.pc - repmat(mean_X', size(X.pc,1), 1);
+            
 
-            P = Y.pc.Location(correspondences, :);
-            mean_P = mean(P);
-            normalized_P = bsxfun(@minus, P, mean_P);
+            P = Y.pc(correspondences, :);
+            mean_P = P' * normalized_weights;
+            normalized_P = (P - repmat(mean_P', size(P,1), 1)) .* repmat(weights, 1, 3);
 
-            W = zeros(3,3);
-            for j=1:size(normalized_X, 1)
-                W = W + weights(j) * normalized_X(j, :)' * normalized_P(j, :);
-            end
+            W = normalized_X' * normalized_P;
             [U, S, V] = svd(W);
             
             R = U * V';
-            t = mean_X - (R * mean_P')';
+            t = mean_X' - (R * mean_P)';
             
             rotated_pc = (R * normalized_P')';
-            error = error_icp(normalized_X, rotated_pc, S) / sum(weights);
+            error = error_func(normalized_X, rotated_pc, S, weights);
             
             transformation = affine3d([[R t']; [0 0 0 1]]').invert;
 

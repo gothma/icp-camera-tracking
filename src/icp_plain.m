@@ -9,6 +9,7 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
     addParameter(p, 'closest_points', @closest_points_delaunayn);
     addParameter(p, 'save_rotated_pc', false);
     addParameter(p, 'verbose', true);
+    addParameter(p, 'icp_error_func', @error_icp);
     
     parse(p, from, to, varargin{:});
     opt = p.Results;
@@ -16,12 +17,11 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
     errors = [];
     transform = affine3d(eye(4));
     total_transformation = affine3d(eye(4));
-    error = inf;
     transformations = {};
     times = [0];
     i = 1;
 
-    while ~opt.criterion(transform, error, i)
+    while ~opt.criterion(transform, errors, i)
         tic
 
         if opt.verbose
@@ -32,14 +32,14 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
         if opt.verbose
             disp('Corresponding points')
         end
-        correspondences = opt.closest_points(from, to);
+        [correspondences, weights] = opt.closest_points(from, to);
         
         if opt.verbose
             disp('Transformation')
         end
-        [transform, error] = svd_transformation(from, to, correspondences, ones(size(correspondences,1), 1));
+        [transform, error] = svd_transformation(from, to, correspondences, weights, opt.icp_error_func);
         
-        from.pc = pctransform(from.pc, transform);
+        from = from.transform(transform);
 
         % Save intermediate results
         errors = [errors; error];
@@ -60,5 +60,5 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
 end
 
 function y = isPointCloud(x)
-    y = isa(x.pc, 'pointCloud');
+    y = isa(x, 'PointCloudContainer');
 end

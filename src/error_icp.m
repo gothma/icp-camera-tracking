@@ -1,4 +1,4 @@
-function [ error ] = error_icp( X, Y, S )
+function [ error ] = error_icp( X, Y, S, weights )
 %ERROR_ICP Summary of this function goes here
 %   Input:
 %       X
@@ -14,6 +14,6 @@ end
 sum_X = sum(abs(X).^2,2);
 sum_Y = sum(abs(Y).^2,2);
 
-error = sum(sum_X + sum_Y) - 2*(S(1) + S(2) + S(3));
+error = (sum(sum_X + sum_Y) - 2*(S(1) + S(2) + S(3))) / sum(weights);
 end
 
