@@ -1,4 +1,4 @@
-function [ out, weights ] = closest_points_kdtree( X, Y )
+function [ out ] = closest_points_kdtree( X, Y )
 
     p = inputParser();
     addRequired(p, 'X', @(x) isa(x, 'PointCloudContainer'));
@@ -9,6 +9,5 @@ function [ out, weights ] = closest_points_kdtree( X, Y )
         Y.KDTree = KDTreeSearcher(Y.pc);
     end
     out = knnsearch(Y.KDTree, X.pc);
-    weights = ones(size(X.pc,1), 1);
 end
 
