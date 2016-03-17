@@ -10,9 +10,14 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
     addParameter(p, 'save_rotated_pc', false);
     addParameter(p, 'verbose', true);
     addParameter(p, 'icp_error_func', @error_icp);
+    addParameter(p, 'weighting', @(~, ~, c) ones(size(c,1), 1));
+    addParameter(p, 'sampling', @(pc) pc);
     
     parse(p, from, to, varargin{:});
     opt = p.Results;
+    
+    from = opt.sampling(from);
+    to = opt.sampling(to);
     
     errors = [];
     transform = affine3d(eye(4));
@@ -32,7 +37,8 @@ function [ total_transformation, errors, transformations ] = icp_plain( from, to
         if opt.verbose
             disp('Corresponding points')
         end
-        [correspondences, weights] = opt.closest_points(from, to);
+        correspondences = opt.closest_points(from, to);
+        weights = opt.weighting(from, to, correspondences);
         
         if opt.verbose
             disp('Transformation')

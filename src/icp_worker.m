@@ -2,14 +2,31 @@ function icp_worker(varargin)
 
 p = inputParser;
 
-p.addParameter('frame', 1);
+p.addParameter('frame', '1:2');
 p.addParameter('convergence', '10steps');
 p.addParameter('closest_points', 'delaunayn');
 p.addParameter('icp_error_func', 'svd_error');
 p.addParameter('verbose', 'false');
+p.addParameter('weighting', 'false');
+p.addParameter('sampling', 'false');
 
 p.parse(varargin{:});
 range = eval(p.Results.frame);
+
+switch p.Results.weighting
+    case 'false'
+        weighting_func = @(~, ~, c) ones(size(c,1), 1);
+        
+end
+
+switch p.Results.sampling
+    case 'false'
+        sampling_func = @(pc) pc;
+    case 'uniform2x'
+        sampling_func = @uniform2xsampling;
+    case 'uniform10x'
+        sampling_func = @uniform10xsampling;
+end
 
 switch p.Results.convergence
     case '1step'
@@ -89,7 +106,9 @@ for i=range
             [estimated_transformation, errors, ~] = icp_plain(last, current, ...
             'criterion', convergence_func, 'verbose', verbose, ...
             'closest_points', closest_points_func, ...
-            'icp_error_func', icp_error_func);
+            'icp_error_func', icp_error_func, ...
+            'sampling', sampling_func, ...
+            'weighting', weighting_func);
 
             results(i).icp_error = errors;
 
@@ -122,5 +141,15 @@ filename = sprintf('%s-%05.0f.mat', datestr(now,'yyyy-mm-dd-HH-MM-SS-FFF'), rand
 save(filename, 'result_table');
 end
 
+
+function pc = uniform2xsampling(pc)
+    pc.homogenous = pc.homogenous(1:2:end, :);
+    pc.color = pc.homogenous(1:2:end, :);
+end
+
+function pc = uniform10xsampling(pc)
+    pc.homogenous = pc.homogenous(1:10:end, :);
+    pc.color = pc.homogenous(1:10:end, :);
+end
 
     
